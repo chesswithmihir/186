@@ -148,6 +148,8 @@ node entry.
 
 > The maximum number of entries we can add without increasing the height is the total capacity of a height 2, order d = 1 tree minus the current number of entries. The total capacity is (2d)(2d + 1)^h = (2)(3^2) = 18. The current number of entries is 6 because the entries are in the leaf nodes. Therefore, we can add a maximum of 18 − 6 = 12.
 
+> For bulkloading, 1. Leaf nodes do not fill up to 2*d+1 and split, but rather, fill up to be 1 record more than fillFactor full, then "splits" by creating a right sibling that contains just one record (leaving the original node with the desired fill factor). fillFactor should ONLY be used for determining how full leaf nodes are (not inner nodes), and calculations should round up, i.e. with d=5 and fillFactor=0.75, leaf nodes should be 8/10 full.
+
 ## Buffer Management
 
 > The buffer manager is responsible for managing pages in memory and processing page requests from the file and index manager. Remember, space on memory is limited, so we cannot afford to store all pages in the buffer pool. The buffer manager is responsible for the eviction policy, or choosing which pages to evict when space is filled up. When pages are evicted from memory or new pages are read in to memory, the buffer manager communicates with the disk space manager to perform the required disk operations.
@@ -257,3 +259,23 @@ The first pass loads all 8 buffer pages with data pages at a time and outputs so
 1 partition of 10 data pages. The rest of the pages will be be divided evenly. B = 6 so we have 5 partitions. 1 with 10 and 4 with (30 - 10) / 4 or 5 each. The partition with 10 must be further divided to get 5 partitions of 2 each. The 2 each must be conquered and the 5 each must be conquered. This is 
 
 
+# Sorting
+
+General External Merge Sort: B=4, N=8
+
+
+Cost = 2N * (1 + ⌈ logB-1(⌈N/B⌉) ⌉)
+	= 2(8) * (1 + ⌈ log3(2) ⌉)
+	= 16 * (1 + 1)
+	=  32 I/Os  ✓
+
+
+logB-1(N/B) ≤ p − 1 where p is number of passes.
+
+passes: 1 + ceil(logb-1(n/b))
+
+IOs = 2 * N * passes^^^
+
+add boolean algebra
+
+add spacial indexing discussion to cheatsheet
